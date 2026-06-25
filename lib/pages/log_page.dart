@@ -115,6 +115,44 @@ class _LogPageState extends State<LogPage> {
                   ),
                 ),
 
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 0, 16, 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 40,
+                          child: SegmentedButton<LogFilterField>(
+                            style: SegmentedButton.styleFrom(
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap, 
+                              backgroundColor: Colors.transparent,
+                              selectedBackgroundColor: const Color(0xFFD4A853).withValues(alpha: 0.2),
+                              foregroundColor: Colors.white54,
+                              selectedForegroundColor: const Color(0xFFD4A853),
+                              side: const BorderSide(color: Colors.white24),
+                              textStyle: GoogleFonts.poppins(fontSize: 15),
+                              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8), 
+                            ),
+                            segments: const [
+                              ButtonSegment(
+                                  value: LogFilterField.checkIn,
+                                  label: Text('Check-in')),
+                              ButtonSegment(
+                                  value: LogFilterField.checkOut,
+                                  label: Text('Check-out')),
+                            ],
+                            selected: {logProv.currentFilterField},
+                            showSelectedIcon: false,
+                            onSelectionChanged: (set) {
+                              logProv.setFilterField(set.first);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 // Custom range label
                 if (logProv.currentFilter == LogFilter.custom &&
                     logProv.customStart != null)

@@ -8,18 +8,18 @@ class LogService {
   CollectionReference get _logsRef => _db.collection(AppConstants.collectionLogs);
 
   // ─── Stream log dengan filter tanggal ────────────────────────────
-  Stream<List<LogModel>> getLogsStream({DateTime? start, DateTime? end}) {
-    Query query = _logsRef.orderBy('checkInTime', descending: true);
+  Stream<List<LogModel>> getLogsStream({DateTime? start, DateTime? end, String filterField = 'checkInTime'}) {
+    Query query = _logsRef.orderBy(filterField, descending: true);
 
     if (start != null) {
       query = query.where(
-        'checkInTime',
+        filterField,
         isGreaterThanOrEqualTo: Timestamp.fromDate(start),
       );
     }
     if (end != null) {
       query = query.where(
-        'checkInTime',
+        filterField,
         isLessThan: Timestamp.fromDate(end),
       );
     }

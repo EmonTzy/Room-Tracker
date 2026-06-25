@@ -5,6 +5,7 @@ import '../services/log_service.dart';
 import '../utils/hotel_date_utils.dart';
 
 enum LogFilter { hariIni, mingguIni, bulanIni, custom }
+enum LogFilterField { checkIn, checkOut }
 
 class LogProvider extends ChangeNotifier {
   final LogService _service = LogService();
@@ -15,6 +16,7 @@ class LogProvider extends ChangeNotifier {
   StreamSubscription<List<LogModel>>? _subscription;
 
   LogFilter _currentFilter = LogFilter.hariIni;
+  LogFilterField _currentFilterField = LogFilterField.checkIn;
   DateTime? _customStart;
   DateTime? _customEnd;
 
@@ -22,6 +24,7 @@ class LogProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   LogFilter get currentFilter => _currentFilter;
+  LogFilterField get currentFilterField => _currentFilterField;
   DateTime? get customStart => _customStart;
   DateTime? get customEnd => _customEnd;
 
@@ -50,6 +53,13 @@ class LogProvider extends ChangeNotifier {
   }
 
   // ─── Apply filter dan re-subscribe ───────────────────────────────
+  void setFilterField(LogFilterField field) {
+    if (_currentFilterField != field) {
+      _currentFilterField = field;
+      applyFilter(_currentFilter, customStart: _customStart, customEnd: _customEnd);
+    }
+  }
+
   void applyFilter(LogFilter filter, {DateTime? customStart, DateTime? customEnd}) {
     _currentFilter = filter;
     if (filter == LogFilter.custom) {
@@ -86,7 +96,12 @@ class LogProvider extends ChangeNotifier {
   void _listenToLogs({DateTime? start, DateTime? end}) {
     _isLoading = true;
     _subscription?.cancel();
-    _subscription = _service.getLogsStream(start: start, end: end).listen(
+    
+    final filterFieldString = _currentFilterField == LogFilterField.checkIn 
+        ? 'checkInTime' 
+        : 'checkOutTime';
+
+    _subscription = _service.getLogsStream(start: start, end: end, filterField: filterFieldString).listen(
       (logs) {
         _logs = logs;
         _isLoading = false;
