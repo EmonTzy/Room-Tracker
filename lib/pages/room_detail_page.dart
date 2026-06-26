@@ -799,9 +799,9 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
                               horizontal: 16, vertical: 8),
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
                             childAspectRatio: 0.85,
                           ),
                           itemCount: availableRooms.length,

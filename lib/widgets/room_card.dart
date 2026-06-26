@@ -64,6 +64,16 @@ class RoomCard extends StatelessWidget {
               ),
             ),
 
+            // Bed count badge — top right
+            Positioned(
+              top: 8,
+              right: 8,
+              child: _badge(
+                room.bedCount == 2 ? '2K' : '1K',
+                Colors.white.withValues(alpha: 0.7),
+              ),
+            ),
+
             // Content
             Padding(
               padding: const EdgeInsets.all(10),
@@ -74,7 +84,7 @@ class RoomCard extends StatelessWidget {
                   Text(
                     room.roomNumber,
                     style: GoogleFonts.poppins(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                       height: 1,
@@ -95,10 +105,9 @@ class RoomCard extends StatelessWidget {
 
                   const Spacer(),
 
-                  // Checkout status badge
+                  // Checkout status badge — bottom left
                   if (isLate)
                     Container(
-                      margin: const EdgeInsets.only(top: 4),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
@@ -116,7 +125,6 @@ class RoomCard extends StatelessWidget {
                     )
                   else if (isCheckoutToday)
                     Container(
-                      margin: const EdgeInsets.only(top: 4),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
@@ -124,7 +132,7 @@ class RoomCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'CO Hari Ini',
+                        'Check Out',
                         style: GoogleFonts.poppins(
                           fontSize: 8,
                           color: Colors.black,
@@ -132,18 +140,6 @@ class RoomCard extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                  const Spacer(),
-
-                  // Jumlah kasur badge
-                  Row(
-                    children: [
-                      if (room.bedCount == 2)
-                        _badge('2K', Colors.white.withValues(alpha: 0.7)),
-                      if (room.bedCount == 1)
-                        _badge('1K', Colors.white.withValues(alpha: 0.7)),
-                    ],
-                  ),
                 ],
               ),
             ),
