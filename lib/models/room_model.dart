@@ -13,6 +13,7 @@ class RoomModel {
   final DateTime? checkOutTime; // Estimasi checkout
   final bool isDayUse;
   final String? keterangan;
+  final String? previousRoom; // Set saat pindah kamar
   final List<Map<String, dynamic>> extendHistory;
 
   const RoomModel({
@@ -28,6 +29,7 @@ class RoomModel {
     this.checkOutTime,
     this.isDayUse = false,
     this.keterangan,
+    this.previousRoom,
     this.extendHistory = const [],
   });
 
@@ -46,6 +48,7 @@ class RoomModel {
       checkOutTime: (data['checkOutTime'] as Timestamp?)?.toDate(),
       isDayUse: data['isDayUse'] ?? false,
       keterangan: data['keterangan'] as String?,
+      previousRoom: data['previousRoom'] as String?,
       extendHistory: List<Map<String, dynamic>>.from(
         (data['extendHistory'] as List?)?.map((e) => Map<String, dynamic>.from(e)) ?? [],
       ),
@@ -65,6 +68,7 @@ class RoomModel {
       'checkOutTime': checkOutTime != null ? Timestamp.fromDate(checkOutTime!) : null,
       'isDayUse': isDayUse,
       'keterangan': keterangan,
+      'previousRoom': previousRoom,
       'extendHistory': extendHistory,
     };
   }
@@ -83,6 +87,7 @@ class RoomModel {
     Object? checkOutTime = _sentinel,
     bool? isDayUse,
     Object? keterangan = _sentinel,
+    Object? previousRoom = _sentinel,
     List<Map<String, dynamic>>? extendHistory,
   }) {
     return RoomModel(
@@ -98,6 +103,7 @@ class RoomModel {
       checkOutTime: checkOutTime == _sentinel ? this.checkOutTime : checkOutTime as DateTime?,
       isDayUse: isDayUse ?? this.isDayUse,
       keterangan: keterangan == _sentinel ? this.keterangan : keterangan as String?,
+      previousRoom: previousRoom == _sentinel ? this.previousRoom : previousRoom as String?,
       extendHistory: extendHistory ?? this.extendHistory,
     );
   }

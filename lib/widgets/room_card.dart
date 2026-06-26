@@ -13,22 +13,27 @@ class RoomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = RoomColorUtils.getRoomColor(room);
-    
-    bool isNextDay = false;
+
+    bool isCheckoutToday = false;
     bool isLate = false;
-    
-    if (room.isOccupied && room.checkInTime != null) {
+
+    if (room.isOccupied && room.checkOutTime != null) {
       final now = DateTime.now();
-      final checkIn = room.checkInTime!;
-      
-      final nowDate = DateTime(now.year, now.month, now.day);
-      final checkInDate = DateTime(checkIn.year, checkIn.month, checkIn.day);
-      
-      isNextDay = nowDate.isAfter(checkInDate);
-      
-      if (room.checkOutTime != null) {
-        isLate = now.isAfter(room.checkOutTime!);
-      }
+      final checkOut = room.checkOutTime!;
+
+      // Hotel day of checkout (the calendar date of 12PM checkout)
+      final checkOutDay = DateTime(checkOut.year, checkOut.month, checkOut.day);
+
+      // Current hotel day (shifts at 4AM — before 4AM still counts as previous day)
+      final hotelNow = now.hour < 4
+          ? DateTime(now.year, now.month, now.day - 1)
+          : DateTime(now.year, now.month, now.day);
+
+      // "CO Hari Ini" window: from 4AM on checkout day until the checkout time (12PM)
+      isCheckoutToday = hotelNow == checkOutDay && now.isBefore(checkOut);
+
+      // "TELAT": past the 12PM checkout deadline on checkout day or later
+      isLate = now.isAfter(checkOut) && !hotelNow.isBefore(checkOutDay);
     }
 
     return GestureDetector(
@@ -40,7 +45,7 @@ class RoomCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.4),
+              color: color.withValues(alpha: 0.4),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -55,7 +60,7 @@ class RoomCard extends StatelessWidget {
               child: Icon(
                 RoomColorUtils.getRoomStatusIcon(room),
                 size: 55,
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
               ),
             ),
 
@@ -82,7 +87,7 @@ class RoomCard extends StatelessWidget {
                     room.roomType,
                     style: GoogleFonts.poppins(
                       fontSize: 9,
-                      color: Colors.white.withOpacity(0.85),
+                      color: Colors.white.withValues(alpha: 0.85),
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -90,54 +95,53 @@ class RoomCard extends StatelessWidget {
 
                   const Spacer(),
 
-                  // Tanda terlambat checkout
-                  if (isNextDay)
-                    if (isLate)
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 5, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade800,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'TELAT',
-                          style: GoogleFonts.poppins(
-                            fontSize: 8,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        margin: const EdgeInsets.only(top: 4),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 5, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.yellow,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'Next Day',
-                          style: GoogleFonts.poppins(
-                            fontSize: 8,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w700,
-                          ),
+                  // Checkout status badge
+                  if (isLate)
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade800,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'TELAT',
+                        style: GoogleFonts.poppins(
+                          fontSize: 8,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                  
+                    )
+                  else if (isCheckoutToday)
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 5, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.yellow,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'CO Hari Ini',
+                        style: GoogleFonts.poppins(
+                          fontSize: 8,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+
                   const Spacer(),
-                  
+
                   // Jumlah kasur badge
                   Row(
                     children: [
                       if (room.bedCount == 2)
-                        _badge('2K', Colors.white.withOpacity(0.7)),
+                        _badge('2K', Colors.white.withValues(alpha: 0.7)),
                       if (room.bedCount == 1)
-                        _badge('1K', Colors.white.withOpacity(0.7)),
+                        _badge('1K', Colors.white.withValues(alpha: 0.7)),
                     ],
                   ),
                 ],
@@ -149,7 +153,7 @@ class RoomCard extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.25),
+                    color: Colors.black.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
@@ -164,7 +168,7 @@ class RoomCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.25),
+        color: Colors.black.withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color, width: 0.5),
       ),

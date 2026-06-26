@@ -39,8 +39,9 @@ class RoomService {
     required String guestName,
     required DateTime checkInTime,
     String? keterangan,
+    int lengthOfStay = 1,
   }) async {
-    final DateTime nextDay = checkInTime.add(const Duration(days: 1));
+    final DateTime nextDay = checkInTime.add(Duration(days: lengthOfStay));
     final DateTime checkOutTime =
         DateTime(nextDay.year, nextDay.month, nextDay.day, 12, 0);
 
@@ -71,6 +72,7 @@ class RoomService {
       'checkOutTime': null,
       'isDayUse': false,
       'keterangan': null,
+      'previousRoom': null,
       'cleanStatus': AppConstants.cleanKotor,
     });
 
@@ -87,6 +89,7 @@ class RoomService {
           : null,
       'isDayUse': currentRoom.isDayUse,
       'keterangan': currentRoom.keterangan,
+      'previousRoom': currentRoom.roomNumber,
       'cleanStatus': AppConstants.cleanBersih,
     });
 

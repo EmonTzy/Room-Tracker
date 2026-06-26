@@ -86,12 +86,14 @@ class RoomProvider extends ChangeNotifier {
     required String guestName,
     required DateTime checkInTime,
     String? keterangan,
+    int lengthOfStay = 1,
   }) async {
     await _service.checkIn(
       roomId: roomId,
       guestName: guestName,
       checkInTime: checkInTime,
       keterangan: keterangan,
+      lengthOfStay: lengthOfStay,
     );
   }
 

@@ -198,8 +198,44 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
                       _DetailRow(
                           'Check-in',
                           HotelDateUtils.formatDateTime(room.checkInTime)),
+                      if (room.checkInTime != null && room.checkOutTime != null)
+                        _DetailRow(
+                          'Lama Menginap',
+                          () {
+                            final inDay = DateTime(
+                              room.checkInTime!.year,
+                              room.checkInTime!.month,
+                              room.checkInTime!.day,
+                            );
+                            final outDay = DateTime(
+                              room.checkOutTime!.year,
+                              room.checkOutTime!.month,
+                              room.checkOutTime!.day,
+                            );
+                            final nights = outDay.difference(inDay).inDays;
+                            return '$nights Malam';
+                          }(),
+                        ),
                       if (room.keterangan != null && room.keterangan!.isNotEmpty)
                         _DetailRow('Keterangan', room.keterangan!),
+                      if (room.previousRoom != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Row(
+                            children: [
+                              Icon(Icons.swap_horiz, size: 13, color: Colors.blueAccent.shade100),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Pindah dari kamar ${room.previousRoom}',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 11,
+                                  color: Colors.blueAccent.shade100,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -384,6 +420,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
   void _showCheckInDialog(BuildContext context, RoomModel room) {
     final guestNameCtrl = TextEditingController();
     final keteranganCtrl = TextEditingController();
+    final lengthOfStayCtrl = TextEditingController(text: '1');
     DateTime checkIn = DateTime.now();
 
     showDialog(
@@ -410,6 +447,13 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
                   label: 'Waktu Check In',
                   value: checkIn,
                   onPicked: (dt) => setDialogState(() => checkIn = dt),
+                ),
+                const SizedBox(height: 12),
+                _DialogTextField(
+                  controller: lengthOfStayCtrl,
+                  label: 'Lama Menginap (Malam)',
+                  icon: Icons.nightlight_round,
+                  keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 12),
                 _DialogTextField(
@@ -440,6 +484,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
                       keterangan: keteranganCtrl.text.trim().isEmpty
                           ? null
                           : keteranganCtrl.text.trim(),
+                      lengthOfStay: int.tryParse(lengthOfStayCtrl.text.trim()) ?? 1,
                     );
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -983,12 +1028,14 @@ class _DialogTextField extends StatelessWidget {
   final String label;
   final IconData icon;
   final int maxLines;
+  final TextInputType? keyboardType;
 
   const _DialogTextField({
     required this.controller,
     required this.label,
     required this.icon,
     this.maxLines = 1,
+    this.keyboardType,
   });
 
   @override
@@ -996,6 +1043,7 @@ class _DialogTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       maxLines: maxLines,
+      keyboardType: keyboardType,
       style: GoogleFonts.poppins(color: Colors.white, fontSize: 13),
       decoration: InputDecoration(
         labelText: label,
